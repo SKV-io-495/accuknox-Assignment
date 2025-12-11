@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-pass
+  labels:
+    app: dvwa
+type: Opaque
+stringData:
+  # Auto-generated from template. Do not edit manually.
+  password: "PASSWORD_PLACEHOLDER"

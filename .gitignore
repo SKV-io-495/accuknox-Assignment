@@ -28,6 +28,7 @@ kube-secrets.yaml
 secret-*.yaml
 *secret*
 *credential*
+k8s/01-db-auth.yaml
 
 # Python
 __pycache__/
