@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dvwa-frontend
+  labels:
+    app: dvwa
+    tier: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dvwa
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: dvwa
+        tier: frontend
+    spec:
+      containers:
+      - name: dvwa
+        image: vulnerables/web-dvwa
+        ports:
+        - containerPort: 80
+        env:
+        # Configuration to connect to external MySQL
+        # Note: These variable names depend on the specific image's entrypoint script support.
+        # If the image expects a config file, a ConfigMap might be needed.
+        # Assuming standard naming or manual configuration via UI.
+        - name: MYSQL_HOST
+          value: "mysql-service"
+        - name: MYSQL_PORT
+          value: "3306"
+        - name: MYSQL_USER
+          value: "dvwa"
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-pass
+              key: password
+        - name: MYSQL_DB
+          value: "dvwa"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dvwa-service
+  labels:
+    app: dvwa
+    tier: frontend
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30080 # Optional: Fixed port for easier access
+  selector:
+    app: dvwa
+    tier: frontend

@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-backend
+  labels:
+    app: dvwa
+    tier: backend
+spec:
+  selector:
+    matchLabels:
+      app: dvwa
+      tier: backend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: dvwa
+        tier: backend
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:5.7
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-pass
+              key: password
+        - name: MYSQL_DATABASE
+          value: dvwa
+        - name: MYSQL_USER
+          value: dvwa
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-pass
+              key: password
+        ports:
+        - containerPort: 3306
+          name: mysql
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+  labels:
+    app: dvwa
+    tier: backend
+spec:
+  ports:
+  - port: 3306
+    targetPort: 3306
+  selector:
+    app: dvwa
+    tier: backend
+  clusterIP: None  # Headless service for stable DNS if needed, or standard ClusterIP
